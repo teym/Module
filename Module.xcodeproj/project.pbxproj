@@ -10,6 +10,9 @@
 		C863DB6C1F727A23002CD75B /* Module.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C863DB621F727A23002CD75B /* Module.framework */; };
 		C863DB711F727A23002CD75B /* ModuleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C863DB701F727A23002CD75B /* ModuleTests.m */; };
 		C863DB731F727A23002CD75B /* Module.h in Headers */ = {isa = PBXBuildFile; fileRef = C863DB651F727A23002CD75B /* Module.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C8D881D31F7361EF00250939 /* ModuleInjection.h in Headers */ = {isa = PBXBuildFile; fileRef = C8D881D11F7361EF00250939 /* ModuleInjection.h */; };
+		C8D881D41F7361EF00250939 /* ModuleInjection.m in Sources */ = {isa = PBXBuildFile; fileRef = C8D881D21F7361EF00250939 /* ModuleInjection.m */; };
+		C8D881D61F736E3000250939 /* Module.m in Sources */ = {isa = PBXBuildFile; fileRef = C8D881D51F736E3000250939 /* Module.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +32,9 @@
 		C863DB6B1F727A23002CD75B /* ModuleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ModuleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C863DB701F727A23002CD75B /* ModuleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ModuleTests.m; sourceTree = "<group>"; };
 		C863DB721F727A23002CD75B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C8D881D11F7361EF00250939 /* ModuleInjection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ModuleInjection.h; sourceTree = "<group>"; };
+		C8D881D21F7361EF00250939 /* ModuleInjection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ModuleInjection.m; sourceTree = "<group>"; };
+		C8D881D51F736E3000250939 /* Module.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Module.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,7 +78,10 @@
 			isa = PBXGroup;
 			children = (
 				C863DB651F727A23002CD75B /* Module.h */,
+				C8D881D51F736E3000250939 /* Module.m */,
 				C863DB661F727A23002CD75B /* Info.plist */,
+				C8D881D11F7361EF00250939 /* ModuleInjection.h */,
+				C8D881D21F7361EF00250939 /* ModuleInjection.m */,
 			);
 			path = Module;
 			sourceTree = "<group>";
@@ -93,6 +102,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C8D881D31F7361EF00250939 /* ModuleInjection.h in Headers */,
 				C863DB731F727A23002CD75B /* Module.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -142,7 +152,7 @@
 		C863DB591F727A23002CD75B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0830;
+				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = mike;
 				TargetAttributes = {
 					C863DB611F727A23002CD75B = {
@@ -197,6 +207,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C8D881D41F7361EF00250939 /* ModuleInjection.m in Sources */,
+				C8D881D61F736E3000250939 /* Module.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -229,7 +241,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -237,7 +251,11 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -281,7 +299,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -289,7 +309,11 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -394,6 +418,7 @@
 				C863DB781F727A23002CD75B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C863DB791F727A23002CD75B /* Build configuration list for PBXNativeTarget "ModuleTests" */ = {
 			isa = XCConfigurationList;
@@ -402,6 +427,7 @@
 				C863DB7B1F727A23002CD75B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
