@@ -14,7 +14,8 @@
 
 @interface ModuleInjection ()
 @property (copy) NSDictionary * modules;
-@property (copy) NSDictionary * moduleImps;
+@property (copy) NSDictionary * instances;
+@property (copy) NSDictionary * interfaces;
 @end
 
 @implementation ModuleInjection
@@ -22,17 +23,22 @@
     self = [super init];
     if (self) {
         self.modules = @{};
-        self.moduleImps = @{};
+        self.instances = @{};
+        self.interfaces = @{};
     }
     return self;
 }
--(void) registModule:(NSString *)name class:(Class)cls interfaces:(NSArray<Protocol *> *)interfaces{
+-(void) registModule:(Class) cls interfaces:(NSArray<Protocol*>*) interfaces loadOnStart:(BOOL)load{
     void(^regist)(void) = ^{
+        NSString * name = NSStringFromClass(cls);
         NSAssert(![self.modules objectForKey:name], @"module [%@] exist", name);
-        
         self.modules = [self.modules dictionaryByAddObject:@{@"class":cls,
+                                                             @"load":@(load),
                                                              @"interfaces":interfaces}
                                                     forKey:name];
+        for (Protocol* p in interfaces) {
+            self.interfaces = [self.interfaces dictionaryByAddObject:name forKey:NSStringFromProtocol(p)];
+        }
     };
     if ([NSThread isMainThread]) {
         regist();
@@ -41,38 +47,42 @@
     }
 }
 -(id) instanceForInterface:(Protocol *)interface{
-    NSAssert(interface, @"interface cant be nil");
-    NSDictionary * imps = self.moduleImps;
-    if ([imps objectForKey:interface]) {
-        return [imps objectForKey:interface];
+    NSString * inf = NSStringFromProtocol(interface);
+    NSString * name = [self.interfaces objectForKey:inf];
+    NSAssert(name, @"interface[%@] not found",inf);
+    id instance = [self.instances objectForKey:name];
+    if (instance) {
+        return instance;
     }
     if (![NSThread isMainThread]) {
         dispatch_sync(dispatch_get_main_queue(), ^{
-            [self loadModuleFor:interface];
+            [self loadModuleFor:name];
         });
     }else{
-        [self loadModuleFor:interface];
+        [self loadModuleFor:name];
     }
-    id imp = [self.moduleImps objectForKey:interface];
-    NSAssert(imp, @"cant find module for interface [%@]",NSStringFromProtocol(interface));
-    return imp;
+    instance = [self.instances objectForKey:name];
+    NSAssert(instance, @"cant find module for interface [%@]",inf);
+    return instance;
 }
--(void) loadModuleFor:(Protocol*) interface{
-    NSAssert([NSThread isMainThread], @"mast run in main thread");
-    if ([self.moduleImps objectForKey:interface]) {
-        return;
-    }
-    for (NSString * name in [self.modules allKeys]) {
-        NSDictionary * module = [self.modules objectForKey:name];
-        NSArray<Protocol*>* protocols = [module objectForKey:@"interfaces"];
-        if ([protocols indexOfObject:interface] != NSNotFound){
-            Class cls = [module objectForKey:@"class"];
-            id theModule = [[cls alloc] initWithInjection:self];
-            NSAssert(![self.moduleImps objectForKey:interface], @"module exist??");
-            self.moduleImps  = [self.moduleImps dictionaryByAddObject:theModule forKey:interface];
-            return;
+-(void) boot{
+    NSArray * names = [self.modules allKeys];
+    for (NSString* name in names) {
+        if ([[[self.modules objectForKey:name] objectForKey:@"load"] boolValue]) {
+            [self loadModuleFor:name];
         }
     }
+}
+-(void) loadModuleFor:(NSString*) name{
+    NSAssert([NSThread isMainThread], @"mast run in main thread");
+    if ([self.instances objectForKey:name]) {
+        return;
+    }
+    NSDictionary * module = [self.modules objectForKey:name];
+    Class cls = [module objectForKey:@"class"];
+    id theModule = [[cls alloc] initWithInjection:self];
+    NSAssert(![self.modules objectForKey:name], @"module exist??");
+    self.instances = [self.instances dictionaryByAddObject:theModule forKey:name];
 }
 @end
 

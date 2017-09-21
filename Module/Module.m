@@ -14,7 +14,6 @@
 @end
 
 @implementation Module
-
 -(id) init{
     self = [super init];
     
@@ -26,9 +25,11 @@
         NSArray* modules = [[[NSThread mainThread] threadDictionary] objectForKey:@"_module_registes"];
         for (Class cls in modules) {
             NSArray * interfaces = [cls Interfaces];
+            BOOL loadWhenStart = [cls loadWhenStart];
             interfaces = interfaces ? interfaces : @[];
-            [self.injection registModule:NSStringFromClass(cls) class:cls interfaces:interfaces];
+            [self.injection registModule:cls interfaces:interfaces loadOnStart:loadWhenStart];
         }
+        [self.injection boot];
     });
     if (self != instance) {
         self = instance;

@@ -32,6 +32,7 @@ static void M##_ModuleLoader(){ \
 
 @protocol Module <NSObject>
 +(NSArray*) Interfaces;
++(BOOL) loadWhenStart;
 -(id) initWithInjection:(id) injection;
 @end
 

@@ -10,5 +10,6 @@
 #import <Module.h>
 
 @interface ModuleInjection : NSObject <ModuleInjection>
--(void) registModule:(NSString*) name class:(Class) cls interfaces:(NSArray<Protocol*>*) interfaces;
+-(void) registModule:(Class) cls interfaces:(NSArray<Protocol*>*) interfaces loadOnStart:(BOOL)load;
+-(void) boot;
 @end
