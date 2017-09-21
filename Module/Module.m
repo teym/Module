@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "ModuleInjection.h"
 
-@interface Module:NSObject
+@interface Module ()
 @property (nonatomic,strong) ModuleInjection * injection;
 @end
 
@@ -35,6 +35,9 @@
         self = instance;
     }
     return self;
+}
+-(id) instanceForInterface:(Protocol *)interface{
+    return [self.injection instanceForInterface:interface];
 }
 @end
 

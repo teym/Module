@@ -36,4 +36,5 @@ static void M##_ModuleLoader(){ \
 -(id) initWithInjection:(id) injection;
 @end
 
-@class Module;
+@interface Module : NSObject <ModuleInjection>
+@end
