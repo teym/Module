@@ -40,5 +40,3 @@
     return [self.injection instanceForInterface:interface];
 }
 @end
-
-ModuleLoader(Module)

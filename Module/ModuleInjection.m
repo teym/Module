@@ -10,6 +10,10 @@
 
 @interface NSDictionary (addObject)
 -(NSDictionary*) dictionaryByAddObject:(id) object forKey:(id) key;
+-(NSDictionary*) dictionaryByAddObjects:(NSArray*)objects forKeys:(NSArray*)keys;
+@end
+@interface NSArray<ObjectType> (map)
+-(NSArray*) map:(id(^)(ObjectType)) func;
 @end
 
 @interface ModuleInjection ()
@@ -36,9 +40,10 @@
                                                              @"load":@(load),
                                                              @"interfaces":interfaces}
                                                     forKey:name];
-        for (Protocol* p in interfaces) {
-            self.interfaces = [self.interfaces dictionaryByAddObject:name forKey:NSStringFromProtocol(p)];
-        }
+        NSArray * keys = [interfaces map:^id(Protocol * p) { return NSStringFromProtocol(p);}];
+        NSArray * vals = [keys map:^id(id _) { return name;}];
+        self.interfaces = [self.interfaces dictionaryByAddObjects:vals forKeys:keys];
+        NSLog(@"module[%@] registed for interfaces [%@]",name,[keys componentsJoinedByString:@","]);
     };
     if ([NSThread isMainThread]) {
         regist();
@@ -83,15 +88,27 @@
     id theModule = [[cls alloc] initWithInjection:self];
     NSAssert(![self.modules objectForKey:name], @"module exist??");
     self.instances = [self.instances dictionaryByAddObject:theModule forKey:name];
+    NSLog(@"module [%@] loaded",name);
 }
 @end
 
 
 @implementation NSDictionary (addObject)
 -(NSDictionary*) dictionaryByAddObject:(id)object forKey:(id)key{
-    NSAssert(![self objectForKey:key], @"key exist");
-    NSMutableDictionary * dict = [self mutableCopy];
-    [dict setObject:object forKey:key];
-    return [dict copy];
+    return [self dictionaryByAddObjects:@[object] forKeys:@[key]];
+}
+-(NSDictionary*) dictionaryByAddObjects:(NSArray*)objects forKeys:(NSArray*)keys{
+    NSMutableDictionary * clone = [self mutableCopy];
+    [clone addEntriesFromDictionary:[NSDictionary dictionaryWithObjects:objects forKeys:keys]];
+    return [clone copy];
+}
+@end
+@implementation NSArray (map)
+-(NSArray*) map:(id(^)(id)) func{
+    NSMutableArray * rets = [self mutableCopy];
+    [self enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL * stop) {
+        [rets replaceObjectAtIndex:idx withObject:func(obj)];
+    }];
+    return [rets copy];
 }
 @end

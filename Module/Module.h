@@ -24,6 +24,7 @@ static void M##_ModuleLoader(){ \
     list = list ? list : @[]; \
     list = [list arrayByAddingObject:cls]; \
     [[[NSThread mainThread] threadDictionary] setObject:list forKey:@"_module_registes"]; \
+    NSLog(@"module[%@] founded",NSStringFromClass(cls));\
 }
 
 @protocol ModuleInjection <NSObject>
