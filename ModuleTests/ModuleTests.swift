@@ -27,6 +27,8 @@ class ModuleA:NSObject, Module, InterfaceA{
         super.init()
     }
 }
+class ModuleSA: ModuleA {
+}
 
 class ModuleB: NSObject, Module, InterfaceB {
     static func interfaces() -> [AnyObject] {
@@ -38,6 +40,8 @@ class ModuleB: NSObject, Module, InterfaceB {
     required init(inject: ModuleInject) {
         super.init()
     }
+}
+class ModuleSB: ModuleB {
 }
 
 class ModuleCA:NSObject, Module, InterfaceA{
@@ -91,7 +95,7 @@ class ModuleTests: XCTestCase {
     func testLoader(){
         let modules = Loader().modules()
         let modulesStr = modules.map { String(describing: $0) }
-        let targets = [ModuleA.self,ModuleB.self,ModuleCA.self,ModuleCB.self]
+        let targets = [ModuleSA.self,ModuleSB.self,ModuleCA.self,ModuleCB.self]
         let targetsStr = targets.map { String(describing: $0) }
         XCTAssertEqual(Set(modulesStr), Set(targetsStr),"loader must be \(targetsStr.joined(separator: ","))")
         

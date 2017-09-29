@@ -112,7 +112,10 @@ class Loader:NSObject,ModuleLoader {
         var classes = [AnyClass]()
         for i in 0 ..< actualClassCount {
             if let cls = allClasses[Int(i)] as? Module.Type{
-                classes.append(cls)
+                if !classes.contains(where: {$0.isSubclass(of: cls as AnyClass)}){ // only load final class
+                    classes = classes.filter({ !(cls as AnyClass).isSubclass(of: $0)})
+                    classes.append(cls)
+                }
             }
         }
         allClasses.deallocate(capacity: Int(expectedClassCount))
