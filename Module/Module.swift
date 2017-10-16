@@ -41,6 +41,7 @@ class RootModule : NSObject, ModuleInject {
         self.modules = Dictionary(uniqueKeysWithValues: loader.modules().map({ (m) -> (String,AnyClass) in
             return (String(describing:m),m)
         }))
+        print("[module] modules:",self.modules)
         self.interfaces = self.modules.reduce([:], { (result, kv) -> [String:String] in
             let ins = (kv.value as? Module.Type)?.interfaces() ?? []
             let maps = ins.map({(p) -> (String,String) in
@@ -63,6 +64,7 @@ class RootModule : NSObject, ModuleInject {
     func instance<T>() throws ->T{
         let ints = self.interfaces
         let key = String(describing: T.self as AnyObject)
+        print("[module] instance:",key)
         guard let objKey = ints[key] else {
             throw ModuleInjectError.ModuleNotFound(msg: key)
         }
@@ -91,6 +93,7 @@ class RootModule : NSObject, ModuleInject {
                 let m = module.init(inject: self)
                 self.instances[name] = m as AnyObject
                 _ = self.circle.popLast()
+                print("[module] module loaded:",name)
             }
         }
     }
