@@ -120,22 +120,47 @@ class RootModule : NSObject, ModuleInject {
 
 class Loader:NSObject,ModuleLoader {
     private var cache:[String:Bool] = [:]
+    
     func modules() -> [AnyClass] {
         var classes = [AnyClass]()
-
-        let expectedClassCount = objc_getClassList(nil, 0)
-        let allClasses = UnsafeMutablePointer<AnyClass>.allocate(capacity: Int(expectedClassCount))
-        let autoreleasingAllClasses = AutoreleasingUnsafeMutablePointer<AnyClass>(allClasses) // Huh? We should have gotten this for free.
-        let actualClassCount:Int32 = objc_getClassList(autoreleasingAllClasses, expectedClassCount)
-        
-        for i in 0 ..< actualClassCount {
-            let cls:AnyClass = allClasses[Int(i)]
-            if checkProtocol(cls: cls) {
-                classes = addIfIsFinalClass(classes: classes, cls: cls)
+        let prefix = self.imagePrefix()
+        var imageCount:UInt32 = 0
+        let images = objc_copyImageNames(&imageCount)
+        for i in 0 ..< imageCount {
+            let imagePath = String(cString: images[Int(i)])
+            if imagePath.hasPrefix(prefix)
+                && !(imagePath.split(separator: "/").last ?? "").hasPrefix("libswift") {
+                let list = self.checkImage(image: images[Int(i)])
+                for cls in list{
+                    classes = self.addIfIsFinalClass(classes: classes, cls: cls)
+                }
             }
         }
-        allClasses.deallocate(capacity: Int(expectedClassCount))
+        free(images)
         return classes
+    }
+    func checkImage(image:UnsafePointer<Int8>) -> [AnyClass] {
+        var rets = [AnyClass]()
+        var count:UInt32 = 0
+        if let classes = objc_copyClassNamesForImage(image, &count){
+            for i in 0 ..< count {
+                if let cls = objc_lookUpClass(classes[Int(i)]) {
+                    if checkProtocol(cls: cls){
+                        rets.append(cls)
+                    }
+                }
+            }
+            free(classes)
+        }
+        return rets
+    }
+    func imagePrefix()->String{
+        if let thisImg = class_getImageName(Loader.self).map({String(cString: $0)}) {
+            var paths = thisImg.split(separator: "/")
+            paths.removeLast(2)
+            return "/" + paths.joined(separator: "/")
+        }
+        return "/"
     }
     func checkProtocol(cls:AnyClass) -> Bool{
         let name = String(describing: cls)
