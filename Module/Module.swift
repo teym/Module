@@ -7,17 +7,30 @@
 //
 
 import Foundation
+
 public enum ModuleInjectError: Error {
     case ModuleNotFound(msg:String)
     case CircleDependency(msg:String)
 }
-public protocol ModuleInject {
-    func instance<T>() throws ->T
+@objc public protocol ModuleInject:AnyObject {
+    @objc func instance(interface:AnyObject) throws ->AnyObject
 }
-public protocol Module: NSObjectProtocol {
-    static func interfaces()->[AnyObject]
-    static func loadOnStart()->Bool
-    init(inject:ModuleInject)
+public class ModuleInjectT {
+    let inject:ModuleInject
+    init(_ inject:ModuleInject) {
+        self.inject = inject
+    }
+    func instance<T>() throws ->T{
+        if let val = try inject.instance(interface:T.self as AnyObject) as? T {
+            return val
+        }
+        throw ModuleInjectError.ModuleNotFound(msg: String(describing: T.self as AnyObject))
+    }
+}
+@objc public protocol Module:AnyObject {
+    @objc static func interfaces()->[AnyObject]
+    @objc static func loadOnStart()->Bool
+    @objc init(inject:ModuleInject)
 }
 
 protocol ModuleLoader {
@@ -60,21 +73,20 @@ class RootModule : NSObject, ModuleInject {
         }
         loadOnStartModules.forEach {try? self.loadModule(name: $0)}
     }
-    
-    func instance<T>() throws ->T{
+    func instance(interface: AnyObject) throws -> AnyObject {
         let ints = self.interfaces
-        let key = String(describing: T.self as AnyObject)
+        let key = String(describing: interface)
         print("[module] instance:",key)
         guard let objKey = ints[key] else {
             throw ModuleInjectError.ModuleNotFound(msg: key)
         }
         let vals = self.instances
-        if let val = vals[objKey] as? T {
+        if let val = vals[objKey]{
             return val
         }
         try self.loadModule(name:objKey)
         let vals2 = self.instances
-        if let val = vals2[objKey] as? T {
+        if let val = vals2[objKey]{
             return val
         }
         throw ModuleInjectError.ModuleNotFound(msg: key)
@@ -107,22 +119,58 @@ class RootModule : NSObject, ModuleInject {
 }
 
 class Loader:NSObject,ModuleLoader {
+    private var cache:[String:Bool] = [:]
     func modules() -> [AnyClass] {
+        var classes = [AnyClass]()
+
         let expectedClassCount = objc_getClassList(nil, 0)
         let allClasses = UnsafeMutablePointer<AnyClass>.allocate(capacity: Int(expectedClassCount))
         let autoreleasingAllClasses = AutoreleasingUnsafeMutablePointer<AnyClass>(allClasses) // Huh? We should have gotten this for free.
         let actualClassCount:Int32 = objc_getClassList(autoreleasingAllClasses, expectedClassCount)
-        var classes = [AnyClass]()
+        
         for i in 0 ..< actualClassCount {
-            if let cls = allClasses[Int(i)] as? Module.Type{
-                if !classes.contains(where: {$0.isSubclass(of: cls as AnyClass)}){ // only load final class
-                    classes = classes.filter({ !(cls as AnyClass).isSubclass(of: $0)})
-                    classes.append(cls)
-                }
+            let cls:AnyClass = allClasses[Int(i)]
+            if checkProtocol(cls: cls) {
+                classes = addIfIsFinalClass(classes: classes, cls: cls)
             }
         }
         allClasses.deallocate(capacity: Int(expectedClassCount))
         return classes
+    }
+    func checkProtocol(cls:AnyClass) -> Bool{
+        let name = String(describing: cls)
+        if let ret = cache[name] {
+            return ret
+        }
+        let key = "Module.Module"
+        var protocolCount:UInt32 = 0
+        if let protocols = class_copyProtocolList(cls, &protocolCount){
+            for j in 0 ..< protocolCount {
+                let protocolName = NSStringFromProtocol(protocols[Int(j)])
+                if key == protocolName {
+                    cache[String(describing: cls)] = true
+                    return true
+                }
+            }
+        }
+        if let sup = class_getSuperclass(cls) {
+            return checkProtocol(cls: sup)
+        }
+        cache[String(describing: cls)] = false
+        return false
+    }
+    func addIfIsFinalClass(classes:[AnyClass],cls:AnyClass) -> [AnyClass] {
+        var list = classes
+        for i in (0 ..< list.count).reversed() {
+            if list[i].isSubclass(of: cls) {
+                return list
+            }
+            if cls.isSubclass(of: list[i]) {
+                list.remove(at: i)
+            }
+        }
+        list.append(cls)
+        return list
     }
 }
 public let root:ModuleInject = RootModule(loader: Loader())

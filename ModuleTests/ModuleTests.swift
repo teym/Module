@@ -53,7 +53,7 @@ class ModuleCA:NSObject, Module, InterfaceA{
     }
     required init(inject: ModuleInject) {
         super.init()
-        let _:InterfaceB? = try? inject.instance()
+        let _:InterfaceB? = try? ModuleInjectT(inject).instance()
     }
 }
 
@@ -66,7 +66,7 @@ class ModuleCB: NSObject, Module, InterfaceB {
     }
     required init(inject: ModuleInject) {
         super.init()
-        let _:InterfaceA? = try? inject.instance()
+        let _:InterfaceA? = try? ModuleInjectT(inject).instance()
     }
 }
 
@@ -110,12 +110,12 @@ class ModuleTests: XCTestCase {
         let loader = Mockloader(modules: [ModuleA.self,ModuleB.self])
         let root = RootModule(loader: loader)
         
-        let insA:InterfaceA? = try? root.instance()
+        let insA:InterfaceA? = try? ModuleInjectT(root).instance()
         XCTAssert(insA != nil && insA! is ModuleA, "interfaceA must be ModuleA instance")
-        let insB:InterfaceB? = try? root.instance()
+        let insB:InterfaceB? = try? ModuleInjectT(root).instance()
         XCTAssert(insB != nil && insB! is ModuleB, "interfaceB must be ModuleB instance")
         var ret:InterfaceC?
-        XCTAssertThrowsError(ret=try root.instance())
+        XCTAssertThrowsError(ret=try ModuleInjectT(root).instance())
         XCTAssertNil(ret)
     }
     
@@ -123,7 +123,7 @@ class ModuleTests: XCTestCase {
         let loader = Mockloader(modules: [ModuleCA.self,ModuleCB.self])
         let root = RootModule(loader: loader)
         var ret:InterfaceA?
-        XCTAssertThrowsError(ret=try root.instance())
+        XCTAssertThrowsError(ret=try ModuleInjectT(root).instance())
         XCTAssertNil(ret)
     }
     
