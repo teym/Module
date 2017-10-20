@@ -17,10 +17,10 @@ public enum ModuleInjectError: Error {
 }
 public class ModuleInjectT {
     let inject:ModuleInject
-    init(_ inject:ModuleInject) {
+    public init(_ inject:ModuleInject) {
         self.inject = inject
     }
-    func instance<T>() throws ->T{
+    public func instance<T>() throws ->T{
         if let val = try inject.instance(interface:T.self as AnyObject) as? T {
             return val
         }
