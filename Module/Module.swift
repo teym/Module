@@ -7,31 +7,7 @@
 //
 
 import Foundation
-
-public enum ModuleInjectError: Error {
-    case ModuleNotFound(msg:String)
-    case CircleDependency(msg:String)
-}
-@objc public protocol ModuleInject:AnyObject {
-    @objc func instance(interface:AnyObject) throws ->AnyObject
-}
-public class ModuleInjectT {
-    let inject:ModuleInject
-    public init(_ inject:ModuleInject) {
-        self.inject = inject
-    }
-    public func instance<T>() throws ->T{
-        if let val = try inject.instance(interface:T.self as AnyObject) as? T {
-            return val
-        }
-        throw ModuleInjectError.ModuleNotFound(msg: String(describing: T.self as AnyObject))
-    }
-}
-@objc public protocol Module:AnyObject {
-    @objc static func interfaces()->[AnyObject]
-    @objc static func loadOnStart()->Bool
-    @objc init(inject:ModuleInject)
-}
+import Interfaces
 
 protocol ModuleLoader {
     func modules()->[AnyClass]
@@ -167,7 +143,7 @@ class Loader:NSObject,ModuleLoader {
         if let ret = cache[name] {
             return ret
         }
-        let key = "Module.Module"
+        let key = NSStringFromProtocol(Module.self as Protocol) //"Interfaces.Module"
         var protocolCount:UInt32 = 0
         if let protocols = class_copyProtocolList(cls, &protocolCount){
             for j in 0 ..< protocolCount {

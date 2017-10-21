@@ -11,6 +11,8 @@
 		276BCBB51F7CE01D00CD8705 /* ModuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276BCBB41F7CE01D00CD8705 /* ModuleTests.swift */; };
 		276BCBB71F7CE01D00CD8705 /* Module.h in Headers */ = {isa = PBXBuildFile; fileRef = 276BCBA91F7CE01C00CD8705 /* Module.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		276BCBC11F7CE0C200CD8705 /* Module.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276BCBC01F7CE0C200CD8705 /* Module.swift */; };
+		27E76F271F9B5CB0006BD337 /* Interfaces.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E76F261F9B5CB0006BD337 /* Interfaces.framework */; };
+		27E76F281F9B5CF8006BD337 /* Interfaces.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E76F261F9B5CB0006BD337 /* Interfaces.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +33,7 @@
 		276BCBB41F7CE01D00CD8705 /* ModuleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleTests.swift; sourceTree = "<group>"; };
 		276BCBB61F7CE01D00CD8705 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		276BCBC01F7CE0C200CD8705 /* Module.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Module.swift; sourceTree = "<group>"; };
+		27E76F261F9B5CB0006BD337 /* Interfaces.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Interfaces.framework; path = Carthage/Build/iOS/Interfaces.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27E76F271F9B5CB0006BD337 /* Interfaces.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -45,6 +49,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27E76F281F9B5CF8006BD337 /* Interfaces.framework in Frameworks */,
 				276BCBB01F7CE01D00CD8705 /* Module.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -58,6 +63,7 @@
 				276BCBA81F7CE01C00CD8705 /* Module */,
 				276BCBB31F7CE01D00CD8705 /* ModuleTests */,
 				276BCBA71F7CE01C00CD8705 /* Products */,
+				27E76F251F9B5CB0006BD337 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -87,6 +93,14 @@
 				276BCBB61F7CE01D00CD8705 /* Info.plist */,
 			);
 			path = ModuleTests;
+			sourceTree = "<group>";
+		};
+		27E76F251F9B5CB0006BD337 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				27E76F261F9B5CB0006BD337 /* Interfaces.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -128,6 +142,7 @@
 				276BCBAB1F7CE01D00CD8705 /* Sources */,
 				276BCBAC1F7CE01D00CD8705 /* Frameworks */,
 				276BCBAD1F7CE01D00CD8705 /* Resources */,
+				27E76F291F9B5D24006BD337 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -195,6 +210,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		27E76F291F9B5D24006BD337 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/Interfaces.framework",
+			);
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Interfaces.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		276BCBA11F7CE01C00CD8705 /* Sources */ = {
@@ -347,6 +380,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = Module/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -370,6 +407,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = Module/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -388,7 +429,10 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = ModuleTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = me.mike.ModuleTests;
@@ -405,7 +449,10 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = ModuleTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = me.mike.ModuleTests;

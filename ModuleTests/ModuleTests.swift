@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import Interfaces
 @testable import Module
 
 protocol InterfaceA {
