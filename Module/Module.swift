@@ -98,6 +98,7 @@ class Loader:NSObject,ModuleLoader {
     private var cache:[String:Bool] = [:]
     
     func modules() -> [AnyClass] {
+        let t = Date()
         var classes = [AnyClass]()
         let prefix = self.imagePrefix()
         var imageCount:UInt32 = 0
@@ -110,9 +111,14 @@ class Loader:NSObject,ModuleLoader {
                 for cls in list{
                     classes = self.addIfIsFinalClass(classes: classes, cls: cls)
                 }
+                print("[Module] get:",list.count," image:",imagePath)
+            }else{
+                print("[Module] filted image:",imagePath)
             }
         }
         free(images)
+        let use = Date().timeIntervalSince(t)
+        print("[Module] load time use:",use)
         return classes
     }
     func checkImage(image:UnsafePointer<Int8>) -> [AnyClass] {
