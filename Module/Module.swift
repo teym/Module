@@ -105,8 +105,9 @@ class Loader:NSObject,ModuleLoader {
         let images = objc_copyImageNames(&imageCount)
         for i in 0 ..< imageCount {
             let imagePath = String(cString: images[Int(i)])
-            if imagePath.hasPrefix(prefix)
-                && !(imagePath.split(separator: "/").last ?? "").hasPrefix("libswift") {
+            if (imagePath.hasPrefix(prefix) // for simulator debug
+                && !(imagePath.split(separator: "/").last ?? "").hasPrefix("libswift")) ||
+                imagePath.contains("Xcode/DerivedData"){
                 let list = self.checkImage(image: images[Int(i)])
                 for cls in list{
                     classes = self.addIfIsFinalClass(classes: classes, cls: cls)
