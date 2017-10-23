@@ -100,14 +100,15 @@ class Loader:NSObject,ModuleLoader {
     func modules() -> [AnyClass] {
         let t = Date()
         var classes = [AnyClass]()
-        let prefix = Bundle.main.bundlePath
+        let imgPrefix = self.imagePrefix()
+        let appPrefix = Bundle.main.bundlePath
         var imageCount:UInt32 = 0
         let images = objc_copyImageNames(&imageCount)
         for i in 0 ..< imageCount {
             let imagePath = String(cString: images[Int(i)])
-            if (imagePath.hasPrefix(prefix) // for simulator debug
+            if ((imagePath.hasPrefix(appPrefix) || imagePath.hasPrefix(imgPrefix))
                 && !(imagePath.split(separator: "/").last ?? "").hasPrefix("libswift")) ||
-                imagePath.contains("Xcode/DerivedData"){
+                imagePath.contains("Xcode/DerivedData"){ // for simulator debug
                 let list = self.checkImage(image: images[Int(i)])
                 for cls in list{
                     classes = self.addIfIsFinalClass(classes: classes, cls: cls)
@@ -136,6 +137,14 @@ class Loader:NSObject,ModuleLoader {
             free(classes)
         }
         return rets
+    }
+    func imagePrefix()->String{
+        if let thisImg = class_getImageName(Loader.self).map({String(cString: $0)}) {
+            var paths = thisImg.split(separator: "/")
+            paths.removeLast(2)
+            return "/" + paths.joined(separator: "/")
+        }
+        return "/"
     }
     func checkProtocol(cls:AnyClass) -> Bool{
         let name = String(describing: cls)
