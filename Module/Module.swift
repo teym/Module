@@ -100,7 +100,7 @@ class Loader:NSObject,ModuleLoader {
     func modules() -> [AnyClass] {
         let t = Date()
         var classes = [AnyClass]()
-        let prefix = self.imagePrefix()
+        let prefix = Bundle.main.bundlePath
         var imageCount:UInt32 = 0
         let images = objc_copyImageNames(&imageCount)
         for i in 0 ..< imageCount {
@@ -135,14 +135,6 @@ class Loader:NSObject,ModuleLoader {
             free(classes)
         }
         return rets
-    }
-    func imagePrefix()->String{
-        if let thisImg = class_getImageName(Loader.self).map({String(cString: $0)}) {
-            var paths = thisImg.split(separator: "/")
-            paths.removeLast(2)
-            return "/" + paths.joined(separator: "/")
-        }
-        return "/"
     }
     func checkProtocol(cls:AnyClass) -> Bool{
         let name = String(describing: cls)
