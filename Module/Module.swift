@@ -104,11 +104,18 @@ class Loader:NSObject,ModuleLoader {
         let appPrefix = Bundle.main.bundlePath
         var imageCount:UInt32 = 0
         let images = objc_copyImageNames(&imageCount)
+        let isSimulator = { () -> Bool in
+            #if arch(i386) || arch(x86_64)
+                return true
+            #elseif os(iOS)
+                return false
+            #endif
+        }()
         for i in 0 ..< imageCount {
             let imagePath = String(cString: images[Int(i)])
             if ((imagePath.hasPrefix(appPrefix) || imagePath.hasPrefix(imgPrefix))
                 && !(imagePath.split(separator: "/").last ?? "").hasPrefix("libswift")) ||
-                imagePath.contains("Xcode/DerivedData"){ // for simulator debug
+                (isSimulator && imagePath.contains("Xcode/DerivedData")){ // for simulator debug
                 let list = self.checkImage(image: images[Int(i)])
                 for cls in list{
                     classes = self.addIfIsFinalClass(classes: classes, cls: cls)
