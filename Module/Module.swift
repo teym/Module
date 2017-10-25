@@ -106,8 +106,10 @@ class Loader:NSObject,ModuleLoader {
         let images = objc_copyImageNames(&imageCount)
         let isSimulator = { () -> Bool in
             #if arch(i386) || arch(x86_64)
+                print("[Module] in Simulator")
                 return true
             #elseif os(iOS)
+                print("[Module] in Device")
                 return false
             #endif
         }()
